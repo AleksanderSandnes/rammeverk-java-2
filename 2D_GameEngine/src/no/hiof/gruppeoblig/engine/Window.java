@@ -40,4 +40,16 @@ public class Window {
         graphics.drawImage(image, 0, 0, canvas.getWidth(), canvas.getHeight(), null);
         bufferStrategy.show();
     }
+
+    public Canvas getCanvas() {
+        return canvas;
+    }
+
+    public BufferedImage getImage() {
+        return image;
+    }
+
+    public JFrame getFrame() {
+        return frame;
+    }
 }
