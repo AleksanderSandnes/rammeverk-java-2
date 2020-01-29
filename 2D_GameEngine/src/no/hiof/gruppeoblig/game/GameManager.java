@@ -3,6 +3,7 @@ package no.hiof.gruppeoblig.game;
 import no.hiof.gruppeoblig.engine.AbstractGame;
 import no.hiof.gruppeoblig.engine.GameContainer;
 import no.hiof.gruppeoblig.engine.Renderer;
+import no.hiof.gruppeoblig.engine.audio.SoundClip;
 import no.hiof.gruppeoblig.engine.gfx.Image;
 import no.hiof.gruppeoblig.engine.gfx.ImageTile;
 
@@ -13,15 +14,17 @@ import java.awt.image.ImageProducer;
 
 public class GameManager extends AbstractGame {
     private ImageTile image;
+    private SoundClip clip;
 
     public GameManager() {
         image = new ImageTile("/test.png", 16, 16);
+        clip = new SoundClip("/audio/minecraft.wav");
     }
 
     @Override
     public void update(GameContainer gameContainer, float dt) {
         if(gameContainer.getInput().isKeyDown(KeyEvent.VK_A)) {
-            System.out.println("A was pressed");
+            clip.play();
         }
 
         temp += dt * 20;

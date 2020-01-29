@@ -52,16 +52,16 @@ public class Renderer {
     }
 
     public void drawImage(Image image, int offX, int offY) {
+        //Don't Render Code
+        if(offX < -image.getWidth()) return;
+        if(offY < -image.getWidth()) return;
+        if(offX >= pixelWidth - 48) return;
+        if(offY >= pixelHeight - 48) return;
+
         int newX = 0;
         int newY = 0;
         int newWidth = image.getWidth();
         int newHeight = image.getHeight();
-
-        //Don't Render Code
-        if(offX < -newWidth) return;
-        if(offY < -newHeight) return;
-        if(offX >= pixelWidth - 48) return;
-        if(offY >= pixelHeight - 48) return;
 
         //Clipping code
         if(offX < 0) {newX -= offX;}
