@@ -24,7 +24,7 @@ public class GameManager extends AbstractGame {
             System.out.println("A was pressed");
         }
 
-        temp += dt;
+        temp += dt * 20;
 
         if(temp > 3) {
             temp = 0;
