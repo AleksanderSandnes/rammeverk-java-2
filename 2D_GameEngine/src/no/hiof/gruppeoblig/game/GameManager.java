@@ -24,11 +24,9 @@ public class GameManager extends AbstractGame {
         //image1 = new ImageTile("/wood.png", 16, 16);
         image2 = new Image("/wood.png");
         image2.setLightBlock(Light.FULL);
-        //image2.setAlpha(true);
-        image2.setAlpha(false);
+        image2.setAlpha(true);
         image3 = new ImageTile("/test2.png", 16, 16);
-        //image3.setAlpha(true);
-        image3.setAlpha(false);
+        image3.setAlpha(true);
         clip = new SoundClip("/audio/minecraft.wav");
         light = new Light(100, 0xff00ffff);
     }

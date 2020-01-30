@@ -13,6 +13,7 @@ import java.util.Comparator;
 public class Renderer {
     private Font font = Font.STANDARD;
     private ArrayList<ImageRequest> imageRequests = new ArrayList<ImageRequest>();
+    private ArrayList<LightRequest> lightRequests = new ArrayList<LightRequest>();
 
     private int pixelWidth, pixelHeight;
     private int[] pixels;
@@ -65,6 +66,12 @@ public class Renderer {
             drawImage(ir.image, ir.offX, ir.offY);
         }
 
+        //Draw lighting
+        for(int i = 0; i < lightRequests.size(); i++) {
+            LightRequest lightRequest = lightRequests.get(i);
+            drawLightRequest(lightRequest.light, lightRequest.locationX, lightRequest.locationY);
+        }
+
         for(int i = 0; i < pixels.length; i++) {
             float r = ((lightMap[i] >> 16) & 0xff) / 255f;
             float g = ((lightMap[i] >> 8) & 0xff) / 255f;
@@ -74,6 +81,7 @@ public class Renderer {
         }
 
         imageRequests.clear();
+        lightRequests.clear();
         processing = false;
     }
 
@@ -257,6 +265,10 @@ public class Renderer {
     }
 
     public void drawLight(Light light, int offX, int offY) {
+        lightRequests.add(new LightRequest(light, offX, offY));
+    }
+
+    private void drawLightRequest(Light light, int offX, int offY) {
         for(int i = 0; i < light.getDiameter(); i++) {
             drawLightLine(light, light.getRadius(), light.getRadius(), i, 0, offX, offY);
             drawLightLine(light, light.getRadius(), light.getRadius(), i, light.getDiameter(), offX, offY);
