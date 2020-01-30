@@ -7,6 +7,7 @@ import java.io.IOException;
 public class Image {
     private int width, height;
     private int[] pixels;
+    private boolean alpha = false;
 
     public Image(String path) {
         BufferedImage image = null;
@@ -46,5 +47,13 @@ public class Image {
 
     public void setPixels(int[] pixels) {
         this.pixels = pixels;
+    }
+
+    public boolean isAlpha() {
+        return alpha;
+    }
+
+    public void setAlpha(boolean alpha) {
+        this.alpha = alpha;
     }
 }
