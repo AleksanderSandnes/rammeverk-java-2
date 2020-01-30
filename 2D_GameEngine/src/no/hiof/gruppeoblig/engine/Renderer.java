@@ -1,9 +1,8 @@
 package no.hiof.gruppeoblig.engine;
 
+import no.hiof.gruppeoblig.engine.gfx.*;
 import no.hiof.gruppeoblig.engine.gfx.Font;
 import no.hiof.gruppeoblig.engine.gfx.Image;
-import no.hiof.gruppeoblig.engine.gfx.ImageRequest;
-import no.hiof.gruppeoblig.engine.gfx.ImageTile;
 
 import java.awt.*;
 import java.awt.image.DataBufferInt;
@@ -21,7 +20,7 @@ public class Renderer {
     private int[] lightMap;
     private int[] lightBlock;
 
-    private int ambientColor = 0xff6b6b6b;
+    private int ambientColor = 0xff232323;
     private int zDepth = 0;
     private boolean processing = false;
 
@@ -118,7 +117,19 @@ public class Renderer {
         int maxGreen = Math.max((baseColor >> 8) & 0xff, (value >> 8) & 0xff);
         int maxBlue = Math.max(baseColor & 0xff, value & 0xff);
 
-        lightMap[x + y * pixelWidth] = (maxRed << 16 | maxGreen << 8 | maxBlue);;
+        lightMap[x + y * pixelWidth] = (maxRed << 16 | maxGreen << 8 | maxBlue);
+    }
+
+    public void setLightBlock(int x, int y, int value) {
+        if(x < 0 || x >= pixelWidth || y < 0 || y >= pixelHeight) {
+            return;
+        }
+
+        if(zBuffer[x + y * pixelWidth] > zDepth) {
+            return;
+        }
+
+        lightBlock[x + y * pixelWidth] = value;
     }
 
     public void drawText(String text, int offX, int offY, int color) {
@@ -172,6 +183,7 @@ public class Renderer {
         for(int y = newY; y < newHeight; y++) {
             for(int x = newX; x < newWidth; x++) {
                 setPixel(x + offX, y + offY, image.getPixels()[x + y * image.getWidth()]);
+                setLightBlock(x + offX, y + offY, image.getLightBlock());
             }
         }
     }
@@ -202,6 +214,7 @@ public class Renderer {
         for (int y = newY; y < newHeight; y++) {
             for (int x = newX; x < newWidth; x++) {
                 setPixel(x + offX, y + offY, image.getPixels()[(x + tileX * image.getTileW()) + (y + tileY * image.getTileH()) * image.getWidth()]);
+                setLightBlock(x + offX, y + offY, image.getLightBlock());
             }
         }
     }
@@ -239,6 +252,62 @@ public class Renderer {
         for(int y = newY; y < newHeight; y++) {
             for(int x = newX; x < newWidth; x++) {
                 setPixel(x + offX, y + offY, color);
+            }
+        }
+    }
+
+    public void drawLight(Light light, int offX, int offY) {
+        for(int i = 0; i < light.getDiameter(); i++) {
+            drawLightLine(light, light.getRadius(), light.getRadius(), i, 0, offX, offY);
+            drawLightLine(light, light.getRadius(), light.getRadius(), i, light.getDiameter(), offX, offY);
+            drawLightLine(light, light.getRadius(), light.getRadius(), 0, i, offX, offY);
+            drawLightLine(light, light.getRadius(), light.getRadius(), light.getDiameter(), i, offX, offY);
+        }
+    }
+
+    public void drawLightLine(Light light, int x0, int y0, int x1, int y1, int offX, int offY) {
+        int dx = Math.abs(x1 - x0);
+        int dy = Math.abs(y1 - y0);
+
+        int sx = x0 < x1 ? 1 : -1;
+        int sy = y0 < y1 ? 1 : -1;
+
+        int err = dx - dy;
+        int err2;
+
+        while(true) {
+            int screenX = x0 - light.getRadius() + offX;
+            int screenY = y0 - light.getRadius() + offY;
+
+            if(screenX < 0 || screenX >= pixelWidth || screenY < 0 || screenY >= pixelHeight) {
+                return;
+            }
+
+            int lightColor = light.getLightValue(x0, y0);
+            if(lightColor == 0) {
+                return;
+            }
+
+            if(lightBlock[screenX + screenY * pixelWidth] == Light.FULL) {
+                return;
+            }
+
+            setLightMap(screenX, screenY, lightColor);
+
+            if(x0 == x1 && y0 == y1) {
+                break;
+            }
+
+            err2 = 2 * err;
+
+            if(err2 > -1 * dy) {
+                err -= dy;
+                x0 += sx;
+            }
+
+            if(err2 < dx) {
+                err += dx;
+                y0 += sy;
             }
         }
     }
