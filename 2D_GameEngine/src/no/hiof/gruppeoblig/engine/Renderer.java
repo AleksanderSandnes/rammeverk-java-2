@@ -18,7 +18,10 @@ public class Renderer {
     private int pixelWidth, pixelHeight;
     private int[] pixels;
     private int[] zBuffer;
+    private int[] lightMap;
+    private int[] lightBlock;
 
+    private int ambientColor = 0xff6b6b6b;
     private int zDepth = 0;
     private boolean processing = false;
 
@@ -27,12 +30,16 @@ public class Renderer {
         pixelHeight = gameContainer.getHeight();
         pixels = ((DataBufferInt)gameContainer.getWindow().getImage().getRaster().getDataBuffer()).getData();
         zBuffer = new int[pixels.length];
+        lightMap = new int[pixels.length];
+        lightBlock = new int[pixels.length];
     }
 
     public void clear() {
         for(int i = 0; i < pixels.length; i++) {
             pixels[i] = 0;
             zBuffer[i] = 0;
+            lightMap[i] = ambientColor;
+            lightBlock[i] = 0;
         }
     }
 
@@ -55,9 +62,16 @@ public class Renderer {
 
         for(int i = 0; i < imageRequests.size(); i++) {
             ImageRequest ir = imageRequests.get(i);
-            System.out.println(ir.zDepth);
             setzDepth(ir.zDepth);
             drawImage(ir.image, ir.offX, ir.offY);
+        }
+
+        for(int i = 0; i < pixels.length; i++) {
+            float r = ((lightMap[i] >> 16) & 0xff) / 255f;
+            float g = ((lightMap[i] >> 8) & 0xff) / 255f;
+            float b = (lightMap[i] & 0xff) / 255f;
+
+            pixels[i] = (int)(((pixels[i] >> 16) & 0xff) * r) << 16 | (int)(((pixels[i] >> 8) & 0xff) * g) << 8 | (int)((pixels[i] & 0xff) * b);
         }
 
         imageRequests.clear();
@@ -89,16 +103,31 @@ public class Renderer {
             int newGreen = ((pixelColor >> 8) & 0xff) + (int)((((pixelColor >> 8) & 0xff) - ((value >> 8) & 0xff)) * (alpha / 255f));
             int newBlue = (pixelColor & 0xff) - (int)(((pixelColor & 0xff) - (value & 0xff)) * (alpha / 255f));
 
-            pixels[index] = (255 << 24 | newRed << 16 | newGreen << 8 | newBlue);
+            pixels[index] = (newRed << 16 | newGreen << 8 | newBlue);
         }
     }
 
+    public void setLightMap(int x, int y, int value) {
+        if(x < 0 || x >= pixelWidth || y < 0 || y >= pixelHeight) {
+            return;
+        }
+
+        int baseColor = lightMap[x + y * pixelWidth];
+
+        int maxRed = Math.max((baseColor >> 16) & 0xff, (value >> 16) & 0xff);
+        int maxGreen = Math.max((baseColor >> 8) & 0xff, (value >> 8) & 0xff);
+        int maxBlue = Math.max(baseColor & 0xff, value & 0xff);
+
+        lightMap[x + y * pixelWidth] = (maxRed << 16 | maxGreen << 8 | maxBlue);;
+    }
+
     public void drawText(String text, int offX, int offY, int color) {
-        text = text.toUpperCase();
+        //text = text.toUpperCase();
         int offset = 0;
 
         for(int i = 0; i < text.length(); i++) {
-            int unicode = text.codePointAt(i) - 32;
+            //int unicode = text.codePointAt(i) - 32;
+            int unicode = text.codePointAt(i);
 
             for(int y = 0; y < font.getFontImage().getHeight(); y++) {
                 for(int x = 0; x < font.getWidths()[unicode]; x++) {
