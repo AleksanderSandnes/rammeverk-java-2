@@ -25,6 +25,12 @@ public class Image {
         image.flush();
     }
 
+    public Image(int[] pixels, int width, int height) {
+        this.pixels = pixels;
+        this.width = width;
+        this.height = height;
+    }
+
     public int getWidth() {
         return width;
     }
