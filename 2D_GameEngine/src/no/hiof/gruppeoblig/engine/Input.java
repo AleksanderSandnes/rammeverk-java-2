@@ -4,6 +4,7 @@ import java.awt.event.*;
 
 public class Input implements KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
     private GameContainer gameContainer;
+    private Animation animation;
 
     private final int NUM_KEYS = 256;
     private boolean[] keys = new boolean[NUM_KEYS];
@@ -16,8 +17,9 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
     private int mouseX, mouseY;
     private int scroll;
 
-    public Input(GameContainer gameContainer) {
+    public Input(GameContainer gameContainer, Animation animation) {
         this.gameContainer = gameContainer;
+        this.animation = animation;
         mouseX = 0;
         mouseY = 0;
         scroll = 0;
@@ -87,11 +89,16 @@ public class Input implements KeyListener, MouseListener, MouseMotionListener, M
     @Override
     public void mousePressed(MouseEvent e) {
         buttons[e.getButton()] = true;
+        animation = walkLeft;
+        animation.start();
     }
 
     @Override
     public void mouseReleased(MouseEvent e) {
         buttons[e.getButton()] = false;
+        animation.stop();
+        animation.reset();
+        animation = standing;
     }
 
     @Override

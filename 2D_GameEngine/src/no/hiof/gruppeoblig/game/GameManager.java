@@ -1,6 +1,7 @@
 package no.hiof.gruppeoblig.game;
 
 import no.hiof.gruppeoblig.engine.AbstractGame;
+import no.hiof.gruppeoblig.engine.Animation;
 import no.hiof.gruppeoblig.engine.GameContainer;
 import no.hiof.gruppeoblig.engine.Renderer;
 import no.hiof.gruppeoblig.engine.audio.SoundClip;
@@ -8,6 +9,7 @@ import no.hiof.gruppeoblig.engine.gfx.Image;
 import no.hiof.gruppeoblig.engine.gfx.ImageTile;
 import no.hiof.gruppeoblig.engine.gfx.Light;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.ImageObserver;
@@ -19,6 +21,7 @@ public class GameManager extends AbstractGame {
     private ImageTile image3;
     private SoundClip clip;
     private Light light;
+    private Animation animation;
 
     public GameManager() {
         //image1 = new ImageTile("/wood.png", 16, 16);
@@ -53,6 +56,8 @@ public class GameManager extends AbstractGame {
         renderer.drawImage(image2, 100, 100);
 
         renderer.drawLight(light, gameContainer.getInput().getMouseX(), gameContainer.getInput().getMouseY());
+
+        renderer.drawImage(animation.getSprite(), x, y, null);
 
         //renderer.drawImageTile(image1, gameContainer.getInput().getMouseX() -8, gameContainer.getInput().getMouseY() -16, (int)temp, 0);
         //renderer.drawFillRect(gameContainer.getInput().getMouseX() - 16, gameContainer.getInput().getMouseY() - 16, 32, 32, 0xffffccff);

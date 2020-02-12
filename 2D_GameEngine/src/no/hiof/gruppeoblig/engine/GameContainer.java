@@ -8,6 +8,7 @@ public class GameContainer implements Runnable {
     private Renderer renderer;
     private AbstractGame game;
     private Input input;
+    private Animation animation;
 
     private boolean running = false;
     private final double UPDATE_CAP = 1.0/60.0;
@@ -23,6 +24,7 @@ public class GameContainer implements Runnable {
         window = new Window(this);
         renderer = new Renderer(this);
         input = new Input(this);
+        animation = new Animation(this);
 
         thread = new Thread(this);
         thread.run();
@@ -65,6 +67,7 @@ public class GameContainer implements Runnable {
                 System.out.println("x:" + input.getMouseX() + " y:" + input.getMouseY());
 
                 input.update();
+                animation.update();
 
                 if(frameTime >= 1.0) {
                     frameTime = 0;

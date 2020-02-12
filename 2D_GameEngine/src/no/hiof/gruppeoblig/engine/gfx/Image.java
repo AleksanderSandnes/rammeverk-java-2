@@ -7,7 +7,7 @@ import java.io.IOException;
 public class Image {
     private int width, height;
     private int[] pixels;
-    private boolean alpha = false;
+    private boolean alpha = true; //?
     private int lightBlock = Light.NONE;
 
     public Image(String path) {
